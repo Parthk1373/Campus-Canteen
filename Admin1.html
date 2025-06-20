@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Canteen Management System</title>
+    <script>
+        // Authentication Check: Redirect to login if not authenticated
+        if (localStorage.getItem('isAdminLoggedIn') !== 'true') {
+            window.location.href = 'admin_login.html';
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF4D4D;
+            --secondary-color: #FF6B35;
+            --background-light: #f4f4f4;
+            --text-dark: #333;
+            --white: #ffffff;
+            --border-color: #ddd;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+        }
+        .admin-dashboard { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 260px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-logo { display: flex; align-items: center; margin-bottom: 30px; }
+        .sidebar-logo i { margin-right: 12px; font-size: 28px; }
+        .sidebar-logo h2 { font-size: 20px; }
+        .sidebar-menu { list-style: none; flex-grow: 1; }
+        .sidebar-menu li { margin-bottom: 10px; }
+        .sidebar-menu a {
+            color: var(--white);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease-in-out, padding-left 0.2s ease-in-out;
+            font-size: 15px;
+        }
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: var(--secondary-color);
+            padding-left: 20px;
+        }
+        .sidebar-menu i { margin-right: 12px; width: 20px; text-align: center; }
+        .main-content {
+            flex-grow: 1;
+            padding: 25px;
+            background-color: var(--white);
+        }
+        .main-content h1 { margin-bottom: 25px; color: var(--primary-color); font-size: 28px; }
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .dashboard-card {
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+        .dashboard-card:hover { transform: translateY(-5px); }
+        .dashboard-card h3 {
+            margin-bottom: 10px;
+            color: var(--text-dark);
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .dashboard-card .count {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        .form-section, .table-section {
+            background-color: var(--white);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+        }
+        .form-section h2, .table-section h2 { margin-bottom: 20px; color: var(--primary-color); font-size: 22px; }
+        .form-section input, .form-section select, .form-section textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-section textarea { min-height: 80px; resize: vertical; }
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        .btn:hover { background-color: var(--secondary-color); }
+        .btn.edit-item { background-color: #4CAF50; }
+        .btn.edit-item:hover { background-color: #45a049; }
+        .btn.disable-item { background-color: #f44336; }
+        .btn.disable-item:hover { background-color: #da190b; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .data-table th, .data-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+        }
+        .data-table th {
+            background-color: var(--background-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .data-table tr:nth-child(even) { background-color: #f9f9f9; }
+        .data-table td button { padding: 6px 10px; font-size: 13px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 15px 25px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            animation: slideInRight 0.4s forwards;
+            font-size: 15px;
+        }
+        .notification i { margin-right: 10px; }
+        @keyframes slideInRight { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="notification" id="notification">
+        <i class="fas fa-bell"></i> <span id="notification-message">Notification</span>
+    </div>
+
+    <div class="admin-dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <i class="fas fa-utensils"></i>
+                <h2>Admin Panel</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#dashboard" class="menu-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#add-items" class="menu-link"><i class="fas fa-plus-circle"></i> Add Food Item</a></li>
+                <li><a href="#manage-items" class="menu-link"><i class="fas fa-edit"></i> Manage Items</a></li>
+                <li><a href="#orders" class="menu-link"><i class="fas fa-shopping-cart"></i> View Orders</a></li>
+                <li><a href="#transactions" class="menu-link"><i class="fas fa-file-invoice-dollar"></i> Transactions</a></li>
+                <li><a href="#users" class="menu-link"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="#food-wastage" class="menu-link"><i class="fas fa-trash-alt"></i> Food Wastage</a></li>
+                <li><a href="#" id="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header><h1>Admin Dashboard</h1></header>
+            
+            <section id="dashboard" class="section active">
+                <div class="dashboard-cards">
+                    <div class="dashboard-card"><h3>Total Orders</h3><div class="count" id="total-orders">0</div></div>
+                    <div class="dashboard-card"><h3>Total Revenue</h3><div class="count" id="total-revenue">₹0</div></div>
+                    <div class="dashboard-card"><h3>Food Items</h3><div class="count" id="food-items-count">0</div></div>
+                    <div class="dashboard-card"><h3>New Orders</h3><div class="count" id="new-orders-widget">0</div></div>
+                </div>
+            </section>
+
+            <section id="add-items" class="section form-section">
+                <h2>Add New Food Item</h2>
+                <form id="add-food-form">
+                    <input type="text" id="food-name" placeholder="Food Item Name" required>
+                    <input type="text" id="food-image-url" placeholder="Image URL (e.g., https://...)" required>
+                    <textarea id="food-description" placeholder="Description/Ingredients" required></textarea>
+                    <input type="number" id="food-price" placeholder="Price (e.g., 50)" required step="0.01">
+                    <input type="text" id="food-category-tags" placeholder="Category Tags (comma-separated, e.g., sandwich,veg-sandwich,fast-food)" required>
+                    <select id="food-main-category" required>
+                        <option value="">Select Main Category</option>
+                        <option value="sandwich">Sandwich</option>
+                        <option value="burger">Burger</option>
+                        <option value="pasta">Pasta</option>
+                        <option value="pizza">Pizza</option>
+                        <option value="fries">Fries</option>
+                        <option value="nuggets">Nuggets</option>
+                        <option value="momos">Momos</option>
+                        <option value="chaat">Chaat</option>
+                        <option value="beverages">Beverages (Cold)</option>
+                        <option value="hot-beverages">Hot Beverages</option>
+                        <option value="shakes">Shakes</option>
+                        <option value="ice-cream">Ice-Cream</option>
+                        <option value="chinese">Chinese</option>
+                        <option value="thali">Thali</option>
+                        <option value="all-time-favorite">All Time Favorite</option>
+                        <option value="salad">Salad</option>
+                        <option value="dessert">Desserts</option>
+                         <option value="indian">Indian Cuisine</option>
+                    </select>
+                    <button type="submit" class="btn">Add Food Item</button>
+                </form>
+            </section>
+
+            <section id="manage-items" class="section table-section">
+                <h2>Manage Food Items</h2>
+                <table class="data-table">
+                    <thead><tr><th>Name</th><th>Main Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="food-items-list"></tbody>
+                </table>
+            </section>
+
+            <section id="orders" class="section table-section">
+                <h2>View Orders</h2>
+                <table class="data-table">
+                    <thead><tr><th>Order ID</th><th>Details</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="orders-list"></tbody>
+                </table>
+            </section>
+
+            <section id="transactions" class="section table-section">
+                <h2>View Transactions (Placeholder)</h2>
+                <p>Transaction data would be listed here, typically linked to completed orders.</p>
+            </section>
+            <section id="users" class="section table-section">
+                <h2>View Users (Placeholder)</h2>
+                <p>User data would be listed here. Requires user registration on the menu page.</p>
+            </section>
+            <section id="food-wastage" class="section form-section">
+                <h2>Food Wastage Management (Placeholder)</h2>
+                <p>Functionality for food wastage tracking would go here.</p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Initial Setup ---
+            if (!localStorage.getItem('canteenMenuItems')) {
+                localStorage.setItem('canteenMenuItems', JSON.stringify([])); // Initialize empty if not present
+            }
+            if (!localStorage.getItem('canteenOrders')) {
+                localStorage.setItem('canteenOrders', JSON.stringify([])); //
+            }
+            populateTables(); // Initial population
+            setActiveSection(window.location.hash || '#dashboard'); // Set section based on hash or default
+
+            // --- Navigation ---
+            const menuLinks = document.querySelectorAll('.sidebar-menu a:not(#logout-link)');
+            menuLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    setActiveSection(targetId);
+                    window.location.hash = targetId; // Update URL hash
+                });
+            });
+
+            document.getElementById('logout-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('isAdminLoggedIn');
+                window.location.href = 'admin_login.html';
+            });
+
+            // --- Add Food Item Form ---
+            document.getElementById('add-food-form').addEventListener('submit', handleAddFoodItem);
+
+            // --- Event Delegation for Action Buttons (Edit, Disable, Update Order) ---
+            document.querySelector('.main-content').addEventListener('click', handleActionButtons);
+            
+            // --- Listen for localStorage changes from other tabs/windows ---
+            window.addEventListener('storage', handleStorageChange); //
+        });
+
+        function setActiveSection(targetId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.sidebar-menu a').forEach(m => m.classList.remove('active'));
+            
+            const sectionToShow = document.querySelector(targetId);
+            const menuLinkToActivate = document.querySelector(`.sidebar-menu a[href="${targetId}"]`);
+
+            if (sectionToShow) sectionToShow.classList.add('active');
+            if (menuLinkToActivate) menuLinkToActivate.classList.add('active');
+        }
+
+        // --- Data Management Functions ---
+        function getStoredData(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        }
+        function saveData(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+            // Dispatch a custom event to notify other parts of the app or other tabs if necessary
+            // This is good practice, though the 'storage' event often covers cross-tab communication.
+            window.dispatchEvent(new CustomEvent(`${key}Updated`, { detail: data }));
+        }
+
+        // --- Food Item Management ---
+        function handleAddFoodItem(e) {
+            e.preventDefault();
+            const items = getStoredData('canteenMenuItems');
+            const newItem = {
+                id: 'item-' + Date.now(),
+                name: document.getElementById('food-name').value,
+                image: document.getElementById('food-image-url').value,
+                description: document.getElementById('food-description').value,
+                price: parseFloat(document.getElementById('food-price').value),
+                categoryTags: document.getElementById('food-category-tags').value.toLowerCase(),
+                mainCategory: document.getElementById('food-main-category').value,
+                status: 'Available'
+            };
+            items.push(newItem);
+            saveData('canteenMenuItems', items); //
+            this.reset();
+            populateTables();
+            showNotification('Food item added successfully!', 'success');
+            setActiveSection('#manage-items'); 
+        }
+
+        function renderFoodItems() {
+            const items = getStoredData('canteenMenuItems'); //
+            const listElement = document.getElementById('food-items-list');
+            listElement.innerHTML = '';
+            items.forEach(item => {
+                const row = listElement.insertRow();
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.mainCategory || 'N/A'}</td>
+                    <td>₹${parseFloat(item.price).toFixed(2)}</td>
+                    <td><span class="status-${item.status.toLowerCase()}">${item.status}</span></td>
+                    <td>
+                        <button class="btn edit-item" data-id="${item.id}"><i class="fas fa-edit"></i> Edit</button>
+                        <button class="btn disable-item" data-id="${item.id}" data-status="${item.status}">
+                            <i class="fas ${item.status === 'Available' ? 'fa-ban' : 'fa-check-circle'}"></i> ${item.status === 'Available' ? 'Disable' : 'Enable'}
+                        </button>
+                    </td>
+                `;
+            });
+        }
+
+        // --- Order Management ---
+        function renderOrders() {
+            const orders = getStoredData('canteenOrders'); //
+            const listElement = document.getElementById('orders-list');
+            listElement.innerHTML = '';
+            orders.sort((a,b) => new Date(b.orderDate) - new Date(a.orderDate)); 
+            orders.forEach(order => {
+                const itemsSummary = order.items.map(i => `${i.name} (x${i.quantity})`).join('<br>');
+                const orderDetails = order.customerDetails ? 
+                    `${order.customerDetails.type === 'Dine-in' ? `Table ${order.customerDetails.table}` : `Takeaway (${order.customerDetails.pickupTime || 'ASAP'})`}` 
+                    : 'N/A';
+
+                const row = listElement.insertRow();
+                row.innerHTML = `
+                    <td>${order.orderId}</td>
+                    <td>${orderDetails} <br><small>${new Date(order.orderDate).toLocaleString()}</small></td>
+                    <td>${itemsSummary}</td>
+                    <td>₹${parseFloat(order.totalAmount).toFixed(2)}</td>
+                    <td><span class="status-${order.status.toLowerCase()}">${order.status}</span></td>
+                    <td>
+                        ${order.status === 'New' ? `<button class="btn update-order" data-id="${order.orderId}" data-nextstatus="In Progress">Mark In Progress</button>` : ''}
+                        ${order.status === 'In Progress' ? `<button class="btn update-order" data-id="${order.orderId}" data-nextstatus="Completed">Mark Completed</button>` : ''}
+                        ${order.status === 'Completed' ? `<button class="btn" disabled>Completed</button>` : ''}
+                         ${order.status !== 'New' && order.status !== 'In Progress' && order.status !== 'Completed' ? `<button class="btn" disabled>${order.status}</button>` : ''}
+
+                    </td>
+                `;
+            });
+        }
+        
+        // --- Dashboard Statistics ---
+        function updateDashboardStats() {
+            const orders = getStoredData('canteenOrders');
+            const menuItems = getStoredData('canteenMenuItems');
+
+            document.getElementById('total-orders').textContent = orders.length;
+            document.getElementById('food-items-count').textContent = menuItems.length;
+            document.getElementById('new-orders-widget').textContent = orders.filter(o => o.status === 'New').length;
+
+            const totalRevenue = orders
+                .filter(o => o.status === 'Completed')
+                .reduce((sum, o) => sum + parseFloat(o.totalAmount), 0);
+            document.getElementById('total-revenue').textContent = `₹${totalRevenue.toFixed(2)}`;
+        }
+
+        // --- Combined Table Population ---
+        function populateTables() {
+            renderFoodItems();
+            renderOrders();
+            updateDashboardStats();
+        }
+
+        // --- Handle Action Buttons Click (Event Delegation) ---
+        function handleActionButtons(e) {
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            const itemId = target.dataset.id;
+            let items, itemIndex;
+
+            if (target.classList.contains('edit-item')) {
+                items = getStoredData('canteenMenuItems');
+                itemIndex = items.findIndex(item => item.id === itemId);
+                if (itemIndex > -1) {
+                    const currentItem = items[itemIndex];
+                    // For a real edit, you'd populate a modal form. Here's a simplified prompt version:
+                    const newName = prompt("Enter new name:", currentItem.name);
+                    const newPriceText = prompt("Enter new price:", currentItem.price);
+                    const newPrice = parseFloat(newPriceText);
+                    const newTags = prompt("Enter new category tags (comma-separated):", currentItem.categoryTags);
+                    const newImage = prompt("Enter new image URL:", currentItem.image);
+                    const newDescription = prompt("Enter new description:", currentItem.description);
+                    // Consider adding prompt for mainCategory as well if needed
+
+
+                    if (newName) items[itemIndex].name = newName;
+                    if (newPriceText && !isNaN(newPrice)) items[itemIndex].price = newPrice;
+                    if (newTags) items[itemIndex].categoryTags = newTags.toLowerCase();
+                    if (newImage) items[itemIndex].image = newImage;
+                    if (newDescription) items[itemIndex].description = newDescription;
+                    
+                    saveData('canteenMenuItems', items);
+                    populateTables();
+                    showNotification('Item updated.', 'info');
+                }
+            } else if (target.classList.contains('disable-item')) {
+                items = getStoredData('canteenMenuItems');
+                itemIndex = items.findIndex(item => item.id === itemId);
+                if (itemIndex > -1) {
+                    items[itemIndex].status = items[itemIndex].status === 'Available' ? 'Disabled' : 'Available';
+                    saveData('canteenMenuItems', items);
+                    populateTables();
+                    showNotification(`Item ${items[itemIndex].status.toLowerCase()}.`, 'info');
+                }
+            } else if (target.classList.contains('update-order')) {
+                const nextStatus = target.dataset.nextstatus;
+                let orders = getStoredData('canteenOrders');
+                const orderIndex = orders.findIndex(order => order.orderId === itemId);
+                if (orderIndex > -1) {
+                    orders[orderIndex].status = nextStatus;
+                    saveData('canteenOrders', orders);
+                    populateTables();
+                    showNotification(`Order marked as ${nextStatus}.`, 'success');
+                }
+            }
+        }
+        
+        // --- Handle localStorage changes from other tabs ---
+        function handleStorageChange(event) {
+            console.log('Storage event in Admin:', event.key); // For debugging
+            if (event.key === 'canteenMenuItems' || event.key === 'canteenOrders') {
+                showNotification(`Data updated externally for ${event.key}`, 'info');
+                populateTables(); // Repopulate tables if relevant data changed
+            }
+        }
+
+        // --- Notification Function ---
+        let notificationTimeout;
+        function showNotification(message, type = 'info') { // types: success, info, error
+            const notification = document.getElementById('notification');
+            const notificationMessage = document.getElementById('notification-message');
+            
+            notification.className = 'notification'; // Reset classes
+            if (type === 'success') notification.style.backgroundColor = '#4CAF50';
+            else if (type === 'error') notification.style.backgroundColor = '#f44336';
+            else notification.style.backgroundColor = 'var(--primary-color)'; // Default info
+
+            notificationMessage.innerHTML = message; 
+            notification.style.display = 'flex'; 
+            
+            clearTimeout(notificationTimeout);
+            notificationTimeout = setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3500);
+        }
+
+    </script>
+</body>
+</html>

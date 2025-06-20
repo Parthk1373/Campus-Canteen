@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking - Campus Canteen</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF4D4D;
+            --secondary-color: #FF6B35;
+            --background-light: #f4f4f4;
+            --text-dark: #333;
+            --text-light: #ffffff;
+            --success-color: #28a745;
+            --star-color: #FFD700;
+            --card-bg: #ffffff;
+            --card-shadow: rgba(0,0,0,0.1);
+
+            /* Dark Mode Palette */
+            --dark-background: #121212;
+            --dark-card-bg: #1E1E1E;
+            --dark-text-primary: #ffffff;
+            --dark-text-secondary: #B0B0B0;
+            --dark-card-shadow: rgba(255,255,255,0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Arial', sans-serif;
+            background-color: var(--background-light);
+            line-height: 1.6;
+            color: var(--text-dark);
+            padding-top: 20px; /* Add some padding at the top */
+        }
+        body.dark-mode {
+            background-color: var(--dark-background);
+            color: var(--dark-text-primary);
+        }
+
+
+        .container {
+            max-width: 700px; /* Slightly narrower for a more focused view */
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 2em;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+         body.dark-mode .page-title {
+            color: var(--primary-color); /* Keep primary color for title in dark mode */
+        }
+
+
+        .order-summary-card,
+        .thank-you-message,
+        .feedback-section {
+            background-color: var(--card-bg);
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 5px 15px var(--card-shadow);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        body.dark-mode .order-summary-card,
+        body.dark-mode .thank-you-message,
+        body.dark-mode .feedback-section {
+            background-color: var(--dark-card-bg);
+            box-shadow: 0 5px 15px var(--dark-card-shadow);
+        }
+
+
+        .order-header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start; /* Align items to top */
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+        body.dark-mode .order-header-info {
+            border-bottom-color: var(--dark-text-secondary);
+        }
+
+        .order-header-info h2 {
+            font-size: 1.5em;
+            color: var(--primary-color);
+            margin:0;
+        }
+        .order-header-info p {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+        body.dark-mode .order-header-info p {
+            color: var(--dark-text-secondary);
+        }
+
+
+        .order-items-list h3 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+        body.dark-mode .order-items-list h3 {
+            color: var(--dark-text-primary);
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Vertically align items */
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        body.dark-mode .order-item {
+            border-bottom-color: var(--dark-background); /* Darker separator */
+        }
+        .order-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .order-item-name {
+            font-weight: 500;
+        }
+        .order-item-qty-price {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+        body.dark-mode .order-item-qty-price {
+             color: var(--dark-text-secondary);
+        }
+        .order-item-total {
+            font-weight: 500;
+        }
+
+        .order-total-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+         body.dark-mode .order-total-section {
+            border-top-color: var(--dark-text-secondary);
+        }
+        .order-total-section .total-label {
+            color: var(--primary-color);
+        }
+
+
+        .thank-you-message {
+            text-align: center;
+            border-left: 5px solid var(--primary-color); /* Accent border */
+        }
+        .thank-you-message h2 {
+            font-size: 1.6em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .thank-you-message p {
+            font-size: 1em;
+            color: var(--text-secondary);
+        }
+        body.dark-mode .thank-you-message p {
+             color: var(--dark-text-secondary);
+        }
+        .thank-you-message i.fa-heart {
+            color: var(--primary-color);
+            margin-right: 8px;
+        }
+
+        .feedback-section h2 {
+            font-size: 1.4em;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .feedback-section p {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            color: var(--text-secondary);
+        }
+        body.dark-mode .feedback-section p {
+             color: var(--dark-text-secondary);
+        }
+
+
+        .star-rating-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .star-rating {
+            display: inline-flex;
+            flex-direction: row-reverse; /* To fill stars left-to-right on hover */
+            justify-content: center;
+        }
+        .star-rating input { display: none; }
+        .star-rating label {
+            font-size: 32px; /* Larger stars */
+            color: #ddd; /* Default empty star color */
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0 3px;
+        }
+        body.dark-mode .star-rating label {
+            color: #444; /* Darker empty star for dark mode */
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: var(--star-color);
+            transform: scale(1.15); /* Slightly larger hover/checked effect */
+        }
+        .star-rating label:active { transform: scale(0.95); }
+
+        .rating-value, .rating-text {
+            font-size: 0.9em;
+            font-weight: 500;
+            margin-top: 8px;
+            color: var(--text-secondary);
+            min-height: 18px; /* Ensure space even when empty */
+        }
+        body.dark-mode .rating-value, body.dark-mode .rating-text {
+            color: var(--dark-text-secondary);
+        }
+        .rating-value { color: var(--primary-color); }
+
+
+        .feedback-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            resize: vertical;
+            min-height: 80px;
+            font-size: 0.95em;
+        }
+        body.dark-mode .feedback-form textarea {
+            background-color: var(--dark-background);
+            border-color: #444;
+            color: var(--dark-text-primary);
+        }
+
+
+        .btn-submit-feedback {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px; /* Pill shape */
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            font-weight: 600;
+            display: block;
+            width: fit-content;
+            margin: 0 auto; /* Center button */
+        }
+        .btn-submit-feedback:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .feedback-submitted {
+            display: none;
+            color: var(--success-color);
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .feedback-submitted i { margin-right: 8px; }
+
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .page-title { font-size: 1.8em; margin-bottom: 20px; }
+            .order-header-info { flex-direction: column; align-items: flex-start; }
+            .order-header-info p { text-align: left; margin-top: 5px;}
+            .order-summary-card, .thank-you-message, .feedback-section { padding: 20px; }
+            .star-rating label { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">Your Order Status</h1>
+
+        <div class="order-summary-card">
+            <div class="order-header-info">
+                <div>
+                    <h2>Order Confirmed!</h2>
+                    <p id="order-id-display">Order #LOADING...</p>
+                </div>
+                <p id="order-date-time">Placed on: LOADING...</p>
+            </div>
+
+            <div class="order-items-list">
+                <h3>Items Ordered:</h3>
+                <div id="ordered-items-container">
+                    <p>Loading items...</p>
+                </div>
+            </div>
+
+            <div class="order-total-section">
+                <span class="total-label">Grand Total:</span>
+                <span id="order-total-amount">₹0.00</span>
+            </div>
+        </div>
+
+        <div class="thank-you-message">
+            <h2><i class="fas fa-heart"></i> Thank You!</h2>
+            <p>Your order is being prepared with care by the Campus Canteen team. We appreciate your patronage!</p>
+        </div>
+
+        <div class="feedback-section" id="feedback-section">
+            <h2>How Was Your Experience?</h2>
+            <p>Your feedback helps us improve our service.</p>
+            
+            <form id="feedback-form" class="feedback-form">
+                <div class="star-rating-container">
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5"><label for="star5" class="fas fa-star"></label>
+                        <input type="radio" id="star4" name="rating" value="4"><label for="star4" class="fas fa-star"></label>
+                        <input type="radio" id="star3" name="rating" value="3"><label for="star3" class="fas fa-star"></label>
+                        <input type="radio" id="star2" name="rating" value="2"><label for="star2" class="fas fa-star"></label>
+                        <input type="radio" id="star1" name="rating" value="1"><label for="star1" class="fas fa-star"></label>
+                    </div>
+                    <div class="rating-value" id="rating-value"></div>
+                    <div class="rating-text" id="rating-text">Select your rating</div>
+                </div>
+                
+                <textarea id="feedback-text" placeholder="Tell us more (optional)..." rows="4"></textarea>
+                <button type="submit" class="btn-submit-feedback">Submit Feedback</button>
+            </form>
+            
+            <div class="feedback-submitted" id="feedback-submitted">
+                <i class="fas fa-check-circle"></i> Thank you for your feedback!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Theme Detection (Optional, if you want tracking page to match menu page) ---
+            const savedTheme = localStorage.getItem('theme'); // Assuming menu page uses 'theme'
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            
+            // --- Load Order Details ---
+            const orderDetailsString = localStorage.getItem('currentOrderDetails');
+            const orderIdDisplay = document.getElementById('order-id-display');
+            const orderDateTimeDisplay = document.getElementById('order-date-time');
+            const orderedItemsContainer = document.getElementById('ordered-items-container');
+            const orderTotalAmountDisplay = document.getElementById('order-total-amount');
+
+            if (orderDetailsString) {
+                try {
+                    const orderData = JSON.parse(orderDetailsString);
+
+                    orderIdDisplay.textContent = `Order #${orderData.orderId}`;
+                    orderDateTimeDisplay.textContent = `Placed on: ${orderData.orderDate}`;
+                    orderTotalAmountDisplay.textContent = `₹${orderData.totalAmount}`;
+
+                    orderedItemsContainer.innerHTML = ''; // Clear loading message
+                    if (orderData.items && orderData.items.length > 0) {
+                        orderData.items.forEach(item => {
+                            const itemElement = document.createElement('div');
+                            itemElement.classList.add('order-item');
+                            itemElement.innerHTML = `
+                                <div>
+                                    <span class="order-item-name">${item.name}</span>
+                                    <p class="order-item-qty-price">Qty: ${item.quantity} × ₹${item.price.toFixed(2)}</p>
+                                </div>
+                                <span class="order-item-total">₹${(item.quantity * item.price).toFixed(2)}</span>
+                            `;
+                            orderedItemsContainer.appendChild(itemElement);
+                        });
+                    } else {
+                        orderedItemsContainer.innerHTML = '<p>No items found in this order.</p>';
+                    }
+                    
+                    // Optional: Clear the order details from localStorage after displaying
+                    // This is useful if you don't want the same order to show up on refresh
+                    // but for testing, you might want to keep it.
+                    // localStorage.removeItem('currentOrderDetails'); 
+
+                } catch (e) {
+                    console.error("Error parsing order details:", e);
+                    orderedItemsContainer.innerHTML = '<p>Could not load order details. Please try again or contact support.</p>';
+                    orderIdDisplay.textContent = 'Order #ERROR';
+                }
+            } else {
+                orderIdDisplay.textContent = 'No Order Found';
+                orderedItemsContainer.innerHTML = '<p>It seems there are no order details to display. Please place an order first from the menu page.</p>';
+                orderTotalAmountDisplay.textContent = '₹0.00';
+            }
+
+
+            // --- Star Rating Functionality ---
+            const ratingInputs = document.querySelectorAll('.star-rating input');
+            const ratingLabels = document.querySelectorAll('.star-rating label');
+            const ratingValueDisplay = document.getElementById('rating-value'); 
+            const ratingTextDisplay = document.getElementById('rating-text'); 
+            
+            const ratingDescriptions = {
+                1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Very Good', 5: 'Excellent!'
+            };
+            
+            ratingInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const rating = this.value;
+                    ratingValueDisplay.textContent = `${rating}/5 Stars`;
+                    ratingTextDisplay.textContent = ratingDescriptions[rating] || "Select your rating";
+                    ratingLabels.forEach(label => label.classList.remove('star-burst'));
+                    // Highlight the selected star and those before it
+                    let currentLabel = document.querySelector(`label[for="star${rating}"]`);
+                    while(currentLabel){
+                        currentLabel.classList.add('star-burst');
+                        currentLabel = currentLabel.previousElementSibling?.tagName === 'LABEL' ? currentLabel.previousElementSibling : null;
+                    }
+                });
+            });
+
+            // --- Feedback Form Submission ---
+            const feedbackForm = document.getElementById('feedback-form');
+            const feedbackSubmittedMsg = document.getElementById('feedback-submitted');
+
+            feedbackForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const ratingSelected = document.querySelector('input[name="rating"]:checked');
+                const feedbackText = document.getElementById('feedback-text').value;
+                
+                if (!ratingSelected) {
+                    ratingTextDisplay.textContent = "Please select a star rating.";
+                    ratingTextDisplay.style.color = "var(--primary-color)";
+                    setTimeout(() => {
+                        // Reset text if still no rating, or to current rating description
+                        const currentRating = document.querySelector('input[name="rating"]:checked');
+                        ratingTextDisplay.textContent = ratingDescriptions[currentRating?.value] || "Select your rating";
+                        ratingTextDisplay.style.color = ""; 
+                    }, 2000);
+                    return;
+                }
+                
+                console.log('Rating:', ratingSelected.value);
+                console.log('Feedback:', feedbackText);
+                
+                feedbackForm.style.display = 'none';
+                feedbackSubmittedMsg.style.display = 'block';
+                
+                const feedbackData = {
+                    orderId: orderDetailsString ? JSON.parse(orderDetailsString).orderId : 'N/A',
+                    rating: ratingSelected.value,
+                    text: feedbackText,
+                    date: new Date().toISOString()
+                };
+                localStorage.setItem('lastUserFeedback', JSON.stringify(feedbackData)); // Use a different key for feedback
+                console.log("Feedback saved (locally):", feedbackData);
+            });
+        });
+    </script>
+</body>
+</html>

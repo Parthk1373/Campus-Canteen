@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Campus Canteen</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF4D4D;
+            --secondary-color: #FF6B6B;
+            --text-color: #e0e0e0;
+            --bg-color: #0f0f0f;
+            --header-bg: rgba(20, 20, 20, 0.9); /* For header, aligns with common style */
+            --footer-bg: #1a0f0a;
+            --footer-text: #bdbdbd;
+            --card-bg-dark: #1e1e1e; /* Used by theme toggle in header */
+            --card-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            --border-color: #333333;
+            --glow-color: rgba(255, 107, 53, 0.6);
+        }
+
+        body.light-mode {
+            --text-color: #333333;
+            --bg-color: #ffffff; /* about-us page body bg in light mode */
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --footer-bg: #f8f9fa;
+            --footer-text: #666666;
+            --card-bg-dark: #ffffff; /* For theme toggle button in header */
+            --card-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --border-color: #e0e0e0;
+            --glow-color: rgba(255, 107, 53, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 25px;
+        }
+
+        /* Common Header/Footer CSS (Copied and slightly adapted if needed) */
+        header { /* This header style comes from common components */
+            background-color: var(--header-bg); backdrop-filter: blur(8px); box-shadow: var(--card-shadow);
+            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border-color);
+            padding: 0.8rem 0; transition: background-color 0.5s ease-in-out, backdrop-filter 0.3s ease;
+        }
+        header.header-scrolled { backdrop-filter: blur(12px); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; letter-spacing: 1px; text-shadow: 0 0 8px var(--glow-color); }
+        .logo img { width: 50px; height: 50px; margin-right: 15px; object-fit: contain; border-radius: 50%; }
+        .logo h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary-color); }
+        .nav-links { display: flex; list-style: none; gap: 2rem; }
+        .nav-links li { position: relative; }
+        .nav-links a { text-decoration: none; color: var(--text-color); font-weight: 600; font-size: 1rem; position: relative; padding: 8px 0; transition: color 0.3s ease, text-shadow 0.3s ease; }
+        .nav-links a:hover, .nav-links a.active { color: var(--secondary-color); text-shadow: 0 0 15px var(--secondary-color); }
+        .nav-links a::after { content: ''; position: absolute; width: 0; height: 3px; bottom: -5px; left: 50%; transform: translateX(-50%); background-color: var(--secondary-color); transition: width 0.3s ease; border-radius: 2px; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.8rem; cursor: pointer; color: var(--text-color); transition: color 0.3s ease; }
+        .mobile-menu-btn:hover { color: var(--primary-color); }
+        .auth-buttons { display: flex; align-items: center; gap: 15px; }
+        .header-btn, .theme-toggle { padding: 0.6rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.4s ease; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: var(--card-shadow); font-size: 0.9rem; }
+        /* Make .header-btn an actual button for styling if it's not a link, or style <a> like a button */
+        .header-btn { background-color: var(--primary-color); color: white !important; text-decoration: none; display: inline-block; position: relative; overflow: hidden; }
+        .header-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: 0.5s; }
+        .header-btn:hover::before { left: 100%; }
+        .header-btn:hover { background-color: var(--secondary-color); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255, 107, 53, 0.3); }
+        .theme-toggle { background-color: var(--card-bg-dark); /* Uses card-bg-dark for consistency */ color: var(--text-color); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; padding: 0.6rem 0.9rem; }
+        .theme-toggle:hover { background-color: var(--border-color); color: var(--primary-color); box-shadow: 0 0 12px var(--glow-color); }
+
+        footer { background-color: var(--footer-bg); color: var(--footer-text); padding: 3rem 0 1.5rem; margin-top: 0; /* Removed margin-top from original about-us */ box-shadow: inset 0 8px 15px rgba(0,0,0,0.3); }
+        .footer-columns { display: flex; flex-wrap: wrap; gap: 30px; margin-bottom: 1.5rem; justify-content: space-between; }
+        .footer-column { flex: 1; min-width: 250px; padding: 0 10px; }
+        .footer-column h4 { margin-bottom: 1.2rem; font-size: 1.3rem; color: var(--primary-color); position: relative; padding-bottom: 8px; letter-spacing: 0.5px; }
+        .footer-column h4::after { content: ''; position: absolute; width: 50px; height: 2px; background-color: var(--secondary-color); bottom: 0; left: 0; }
+        .footer-column p, .footer-column a { font-size: 0.95rem; color: var(--footer-text); line-height: 1.7; }
+        .footer-column a { display: block; text-decoration: none; margin-bottom: 0.7rem; transition: color 0.3s ease, transform 0.3s ease; }
+        .footer-column a:hover { color: var(--secondary-color); transform: translateX(4px); }
+        .footer-bottom { text-align: center; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: 0.85rem; color: #999; margin-top: 25px; }
+        body.light-mode .footer-column p, body.light-mode .footer-column a { color: #555; }
+        body.light-mode .footer-bottom { color: #777; border-top: 1px solid rgba(0, 0, 0, 0.1); }
+        @media (max-width: 992px) {
+            .header-content { flex-direction: column; text-align: center; gap: 10px; }
+            .logo { margin-bottom: 0.8rem; justify-content: center; }
+            .nav-links { display: none; width: 100%; flex-direction: column; align-items: center; gap: 0.8rem; margin-top: 0.8rem; background-color: var(--header-bg); padding:10px 0; }
+            .nav-links.active { display: flex; }
+            .mobile-menu-btn { display: block; position: absolute; top: 1.2rem; right: 1.5rem; }
+            .auth-buttons { margin-top: 0.8rem; justify-content: center; }
+            .footer-columns { flex-direction: column; align-items: center; text-align: center; }
+            .footer-column h4::after { left: 50%; transform: translateX(-50%); }
+        }
+         @media (max-width: 576px) {
+            .logo h1 { font-size: 1.5rem; }
+            .header-btn, .theme-toggle { padding: 0.5rem 1rem; font-size: 0.8rem; }
+        }
+        /* End of Common Header/Footer CSS */
+
+        /* About Us Page Specific Styles (from original, with adjustments for theme variables) */
+        .hero-about {
+            height: 65vh;
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://images.pexels.com/photos/326281/pexels-photo-326281.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500') no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white; /* Fixed color for hero text for contrast */
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-about h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            animation: fadeInDown 1s ease-out;
+        }
+        .hero-about p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            animation: fadeInUp 1s ease-out 0.3s;
+            opacity: 0; animation-fill-mode: forwards;
+        }
+        .hero-about .cta-button {
+            padding: 12px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: background-color 0.3s, transform 0.3s;
+            animation: zoomIn 0.8s ease-out 0.6s;
+            opacity: 0; animation-fill-mode: forwards;
+        }
+        .hero-about .cta-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px) scale(1.03);
+        }
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+
+        .page-section { padding: 70px 0; }
+        .page-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--primary-color);
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .page-section h2::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--secondary-color), transparent);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        body.light-mode .page-section h2 { color: var(--primary-color); } /* Ensure title color is consistent */
+
+
+        .story-section {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 40px;
+        }
+        .story-content, .story-image-container {
+            flex: 1;
+            min-width: 300px;
+        }
+        .story-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+        body.light-mode .story-content h3 { color: var(--secondary-color); }
+        .story-content p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+            font-size: 1.05rem;
+            color: var(--text-color);
+        }
+        body.light-mode .story-content p { color: #555; }
+        .story-image-container img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .story-image-container img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        body.light-mode .story-image-container img:hover { box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+
+        .we-provide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .provide-item {
+            background-color: var(--card-bg-dark); /* Use a distinct card background */
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid var(--secondary-color);
+        }
+        body.light-mode .provide-item { background-color: #fff; }
+        .provide-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+        }
+        body.light-mode .provide-item:hover { box-shadow: 0 12px 28px rgba(0,0,0,0.1); }
+
+        .provide-item .icon {
+            font-size: 2.8rem;
+            color: var(--primary-color);
+            margin-bottom: 18px;
+            transition: transform 0.3s ease;
+        }
+        .provide-item:hover .icon { transform: scale(1.1) rotate(-5deg); }
+        .provide-item h4 {
+            font-size: 1.4rem;
+            color: var(--text-color); /* For dark mode */
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        body.light-mode .provide-item h4 { color: #444; } /* For light mode */
+        .provide-item p {
+            font-size: 0.95rem;
+            color: var(--text-color); /* For dark mode */
+            opacity: 0.8;
+        }
+        body.light-mode .provide-item p { color: #666; }
+
+
+        .team-grid {
+            display: grid;
+            /* Adjust grid-template-columns for potentially more items */
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        .team-member {
+            background-color: var(--card-bg-dark); /* Use card-bg-dark */
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        body.light-mode .team-member { background-color: #fff; }
+        .team-member:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        body.light-mode .team-member:hover { box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+        .team-member img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: filter 0.3s ease;
+        }
+        .team-member:hover img { filter: brightness(1.1) saturate(1.1); }
+        .team-member-info { padding: 20px; }
+        .team-member-info h4 {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        .team-member-info p {
+            font-size: 0.9rem;
+            color: var(--text-color); /* For dark mode */
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+        body.light-mode .team-member-info p { color: #666; }
+        .team-social-links a {
+            color: var(--secondary-color);
+            margin: 0 8px;
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+        .team-social-links a:hover { color: var(--primary-color); }
+
+        @media (max-width: 768px) {
+            .hero-about h1 { font-size: 2.8rem; }
+            .hero-about p { font-size: 1.1rem; }
+            .page-section h2 { font-size: 2.2rem; }
+            .story-content h3 { font-size: 1.8rem; }
+            /* Ensure team grid adapts well on smaller screens if more items are added */
+            .team-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Slightly smaller min for more items */
+            }
+        }
+         @media (max-width: 576px) {
+            .team-grid {
+                grid-template-columns: 1fr; /* Stack on very small screens */
+            }
+         }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="https://media.licdn.com/dms/image/v2/C4D0BAQES1BSiZDSKRg/company-logo_200_200/company-logo_200_200/0/1642422410138/d_y_patil_college_of_engineering__technology_kasaba_bawada_logo?e=2147483647&v=beta&t=M3dkm6QQGxgV_Ny_4TljMxG8L3IXWauB3jObNJOm1Rs" alt="DYP College Logo">
+                    <i class="fas fa-utensils" style="color: var(--primary-color); font-size: 1.8rem; margin-left: 10px; margin-right: 10px; vertical-align: middle;"></i>
+                    <h1>Campus Canteen</h1>
+                </div>
+                <button class="mobile-menu-btn" aria-label="Toggle Navigation"><i class="fas fa-bars"></i></button>
+                <ul class="nav-links">
+                    <li><a href="Homepage.html">Home</a></li>
+                    <li><a href="Newmenue1.html">Explore Menu</a></li>
+                    <li><a href="aboutus.html" class="active">About Us</a></li> <li><a href="userprofile.html">My Profile</a></li>
+                    <li><a href="Homepage.html#showAdminModal">Admin</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="Homepage.html#showUserModal" class="header-btn" id="userAuthBtnHeaderAbout">Join / Login</a>
+                    <button class="theme-toggle" aria-label="Toggle Theme" id="commonThemeToggle"><i class="fas fa-sun"></i></button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero-about">
+        <h1>About Our Campus Canteen</h1>
+        <p>Serving delicious, affordable, and convenient meals to fuel your campus life. Discover our story and commitment to quality.</p>
+        <a href="Newmenue1.html" class="cta-button">Explore Our Menu</a>
+    </section>
+
+    <section class="page-section container">
+        <h2>Our Story</h2>
+        <div class="story-section">
+            <div class="story-content">
+                <h3>From Humble Beginnings</h3>
+                <p>Campus Canteen started with a simple idea: to provide students and faculty with a place where they can enjoy wholesome and tasty food without breaking the bank. We noticed the need for a modern, efficient, and diverse food hub right here on campus.</p>
+                <p>Driven by a passion for food and a commitment to our college community, we embarked on a journey to transform the campus dining experience. We've blended traditional flavors with innovative technology to create a seamless and enjoyable experience for everyone.</p>
+            </div>
+            <div class="story-image-container">
+                <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=700&q=80" alt="Canteen Kitchen Preparation" onerror="this.src='https://placehold.co/700x400/EEEEEE/BDBDBD?text=Our+Kitchen';">
+            </div>
+        </div>
+    </section>
+
+    <section class="page-section container" style="background-color: var(--bg-color); /* Ensure section respects body bg */">
+        <h2>What We Provide</h2>
+        <div class="we-provide-grid">
+            <div class="provide-item">
+                <span class="icon"><i class="fas fa-concierge-bell"></i></span>
+                <h4>Delicious & Diverse Menu</h4>
+                <p>From quick snacks to full meals, our menu offers a wide variety of options to cater to all tastes and dietary needs.</p>
+            </div>
+            <div class="provide-item">
+                <span class="icon"><i class="fas fa-dollar-sign"></i></span>
+                <h4>Affordable Prices</h4>
+                <p>We believe good food shouldn't be a luxury. Enjoy budget-friendly meals without compromising on quality or taste.</p>
+            </div>
+            <div class="provide-item">
+                <span class="icon"><i class="fas fa-bolt"></i></span>
+                <h4>Quick & Efficient Service</h4>
+                <p>Our smart ordering system and dedicated staff ensure you get your food fast, so you can get back to your studies.</p>
+            </div>
+            <div class="provide-item">
+                <span class="icon"><i class="fas fa-seedling"></i></span>
+                <h4>Fresh & Quality Ingredients</h4>
+                <p>We are committed to using fresh, locally sourced ingredients whenever possible to prepare nutritious and tasty meals.</p>
+            </div>
+            <div class="provide-item">
+                <span class="icon"><i class="fas fa-mouse-pointer"></i></span>
+                <h4>Effortless Online Ordering</h4>
+                <p>Browse, customize, and order your favorite meals from anywhere on campus using our user-friendly online platform.</p>
+            </div>
+            <div class="provide-item">
+                <span class="icon"><i class="fas fa-credit-card"></i></span>
+                <h4>Seamless Digital Payments</h4>
+                <p>Pay with ease using a variety of digital payment options, including UPI, wallets, and campus cards for a cashless experience.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="page-section container">
+        <h2>Meet the Team (Project Group)</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <img src="parth.jpg" alt="Team Member 1" onerror="this.src='https://placehold.co/400x400/EEEEEE/BDBDBD?text=Dev+1';">
+                <div class="team-member-info">
+                    <h4>Parth Kulkarni</h4>
+                    <p>Project Lead & UX Designer</p>
+                    <div class="team-social-links">
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="Vivek.jpg" alt="Team Member 2" onerror="this.src='https://placehold.co/400x400/EEEEEE/BDBDBD?text=Dev+2';">
+                <div class="team-member-info">
+                    <h4>Vivek Chougule</h4>
+                    <p>Technical Head & UI Designer</p>
+                     <div class="team-social-links">
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="Amey.jpg" alt="Team Member 3" onerror="this.src='https://placehold.co/400x400/EEEEEE/BDBDBD?text=Dev+3';">
+                <div class="team-member-info">
+                    <h4>Amey Munse</h4>
+                    <p>API Integrations</p>
+                     <div class="team-social-links">
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+             <div class="team-member">
+                <img src="Faizan.jpg" alt="Team Member 4" onerror="this.src='https://placehold.co/400x400/EEEEEE/BDBDBD?text=Dev+4';">
+                <div class="team-member-info">
+                    <h4>Faizan Mhate</h4>
+                    <p>QA & Documentation Specialist</p>
+                     <div class="team-social-links">
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="Sakshi.jpg" alt="Team Member 5" onerror="this.src='https://placehold.co/400x400/EEEEEE/BDBDBD?text=Dev+5';">
+                <div class="team-member-info">
+                    <h4>Sakshi Patil</h4>
+                    <p>Visual Assets Coordinator</p>
+                     <div class="team-social-links">
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="Madhumita.jpg" alt="Team Member 6" onerror="this.src='https://placehold.co/400x400/EEEEEE/BDBDBD?text=Dev+6';">
+                <div class="team-member-info">
+                    <h4>Madhumita Salokhe</h4>
+                    <p>Content Curator</p>
+                     <div class="team-social-links">
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="Shivani.jpg" alt="Team Member 7" onerror="this.src='https://placehold.co/400x400/EEEEEE/BDBDBD?text=Dev+7';">
+                <div class="team-member-info">
+                    <h4>Shivani Chavan</h4>
+                    <p>Presentation Reviewer Contribution</p>
+                     <div class="team-social-links">
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>     
+
+    <footer>
+        <div class="container">
+            <div class="footer-columns">
+                <div class="footer-column">
+                    <h4>Contact Us</h4>
+                    <p><i class="fas fa-map-marker-alt"></i> DYP College of Engg. & Tech., Kasba Bawda, Kolhapur</p>
+                    <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+                    <p><i class="fas fa-envelope"></i> canteen@dypcollege.edu</p>
+                    <p><i class="fas fa-clock"></i> Mon-Sat: 8:00 AM - 6:00 PM</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <a href="Newmenue1.html">Menu</a>
+                    <a href="Ordertracking1.html">Track Order</a>
+                    <a href="aboutus.html">About Us</a> <a href="userprofile.html">My Account</a>
+                    <a href="feedback.html">Feedback</a>
+                </div>
+                <div class="footer-column">
+                    <h4>Follow Us</h4>
+                    <a href="#"><i class="fab fa-facebook"></i> Facebook</a>
+                    <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+                    <a href="#"><i class="fab fa-twitter"></i> Twitter</a>
+                    <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+                 <div class="footer-column">
+                    <h4>Services</h4>
+                    <a href="#">Online Ordering</a>
+                    <a href="#">Table Reservation</a>
+                    <a href="#">Catering Services</a>
+                    <a href="#">Meal Plans</a>
+                    <a href="#">Nutritional Info</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="currentYear"></span> DYP College Campus Canteen. All rights reserved. | Designed with <i class="fas fa-heart" style="color: var(--primary-color);"></i> for students</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Common Header/Footer Script (Theme Toggle, Mobile Menu, Year) ---
+        const commonThemeToggle = document.getElementById('commonThemeToggle');
+        const bodyForTheme = document.body;
+        if (commonThemeToggle && bodyForTheme) {
+            const themeIcon = commonThemeToggle.querySelector('i');
+            function applyTheme(theme) {
+                if (theme === 'light') {
+                    bodyForTheme.classList.add('light-mode');
+                    if (themeIcon) { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    bodyForTheme.classList.remove('light-mode');
+                    if (themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+                    localStorage.setItem('theme', 'dark');
+                }
+            }
+            const savedTheme = localStorage.getItem('theme');
+            applyTheme(savedTheme === 'light' ? 'light' : 'dark'); // Default to dark if no saved theme
+            commonThemeToggle.addEventListener('click', () => {
+                const currentTheme = localStorage.getItem('theme') === 'light' ? 'dark' : 'light';
+                applyTheme(currentTheme);
+            });
+        }
+
+        const mobileMenuBtn = document.querySelector('header .mobile-menu-btn');
+        const navLinks = document.querySelector('header .nav-links');
+        if (mobileMenuBtn && navLinks) {
+            mobileMenuBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+                const icon = mobileMenuBtn.querySelector('i');
+                if (icon) { icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-times'); }
+            });
+        }
+        window.addEventListener('scroll', () => {
+            const headerEl = document.querySelector('header'); // Renamed to avoid conflict
+            if (headerEl) { // Use headerEl here
+                if (window.scrollY > 50) headerEl.classList.add('header-scrolled');
+                else headerEl.classList.remove('header-scrolled');
+            }
+        });
+        const currentYearSpan = document.getElementById('currentYear');
+        if (currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
+        
+        // Update header auth button text based on login state
+        const userAuthBtnHeaderAbout = document.getElementById('userAuthBtnHeaderAbout');
+        const loggedInUserStrAbout = localStorage.getItem('loggedInUser');
+        if (loggedInUserStrAbout && userAuthBtnHeaderAbout) {
+            const loggedInUser = JSON.parse(loggedInUserStrAbout);
+            if (loggedInUser && loggedInUser.fullName) {
+                userAuthBtnHeaderAbout.textContent = loggedInUser.fullName.split(' ')[0];
+                userAuthBtnHeaderAbout.href = "userprofile.html"; // Link to profile page
+            }
+        }
+        // --- End of Common Header/Footer Script ---
+
+
+        // Page specific script from original about-us.html (Scroll animation)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId.length > 1) { // Ensure it's not just "#"
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Add animation on scroll for new sections (if not already handled by common script)
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target); // Optional: stop observing after animation
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.story-section, .provide-item, .team-member, .page-section h2').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out'; // Use ease-out for smoother end
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
